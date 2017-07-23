@@ -42,47 +42,24 @@
     '60mH': { a: 20.0479, b: 17.00, c: 1.835, type: eventTypes.RUN, adjustment: 0.24 },
   };
 
-  const events = {
-    MEN: eventsMen,
-    WOMEN: eventsWomen,
-  };
-
   function resolveResult(result, event) {
     let resolvedResult = result.value;
 
     // TODO: convert dimensions and ages
 
     if (result.adjustment) {
-      console.log(event);
       resolvedResult += event.adjustment || 0;
     }
 
     return resolvedResult;
   }
 
-  function calculatePoints(options) {
-    return Math.floor(pointsFormula[options.event.type](options.event.a, options.event.b,
-    options.event.c, resolveResult(options.result, options.event)));
-  }
-
-  const event1 = {
-    event: events.MEN['100m'],
-    result: {
-      value: 10.40,
-      dimension: 's',
-      adjustment: false,
+  module.exports = {
+    events: {
+      MEN: eventsMen,
+      WOMEN: eventsWomen,
     },
+    calculatePoints: options => Math.floor(pointsFormula[options.event.type](options.event.a,
+     options.event.b, options.event.c, resolveResult(options.result, options.event))),
   };
-
-  const event2 = {
-    event: events.MEN['100m'],
-    result: {
-      value: 10.40,
-      dimension: 's',
-      adjustment: true,
-    },
-  };
-
-  console.log(calculatePoints(event1));
-  console.log(calculatePoints(event2));
 })();
