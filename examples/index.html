@@ -1,7 +1,79 @@
 <html>
   <head>
-    <script src="../lib/athletics.js"></script>
+    <script src="athletics.js"></script>
+    <script type="text/javascript">
+      function load() {
+        athletics.init();
+      }
+    </script>
+
   </head>
-  <body>
+  <body onload="load()">
+    <table class='athletics-container' data-athletics-gender="men">
+      <tr class="athletics-event" data-athletics-event="100m">
+        <td>100m</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="Long Jump">
+        <td>Long Jump</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="Shot">
+        <td>Shot Put</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="High Jump">
+        <td>High Jump</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="400m">
+        <td>400m</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr>
+        <td>Day 1</td>
+        <td></td>
+        <td class="athletics-sum" data-athletics-sum-events='["100m", "Long Jump", "Shot", "High Jump", "400m"]'></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="110mH">
+        <td>110mH</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="Discus">
+        <td>Discus</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="Pole Vault">
+        <td>Pole Vault</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="Javelin">
+        <td>Javelin</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr class="athletics-event" data-athletics-event="1500m">
+        <td>1500m</td>
+        <td><input type="text" class="athletics-event-result"></input></td>
+        <td class="athletics-event-points"></td>
+      </tr>
+      <tr>
+        <td>Day 2</td>
+        <td></td>
+        <td class="athletics-sum" data-athletics-sum-events='["110mH", "Discus", "Pole Vault", "Javelin", "1500m"]'></td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td></td>
+        <td class="athletics-sum" data-athletics-sum-events='["100m", "Long Jump", "Shot", "High Jump", "400m", "110mH", "Discus", "Pole Vault", "Javelin", "1500m"]'></td>
+      </tr>
   </body>
 </html>

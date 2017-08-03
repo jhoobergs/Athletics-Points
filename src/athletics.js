@@ -1,4 +1,4 @@
-
+import ageGroups from '../data/age-table.json';
 
 (() => {
   const eventTypes = { RUN: 'RUN', JUMP: 'JUMP', THROW: 'THROW' };
@@ -7,6 +7,12 @@
     RUN: (a, b, c, T) => a * (b - T) ** c, // T in seconds
     JUMP: (a, b, c, M) => a * (M - b) ** c, // M in centimeters
     THROW: (a, b, c, D) => a * (D - b) ** c, // D in meters
+  };
+
+  const roundFormula = {
+    RUN: T => Math.ceil(T * 100) / 100, // T in seconds
+    JUMP: M => Math.floor(M), // M in centimeters
+    THROW: D => Math.floor(D * 100) / 100, // D in meters
   };
 
   const eventsMen = {
@@ -42,24 +48,102 @@
     '60mH': { a: 20.0479, b: 17.00, c: 1.835, type: eventTypes.RUN, adjustment: 0.24 },
   };
 
-  function resolveResult(result, event) {
+  Object.keys(eventsMen).forEach((key) => {
+    eventsMen[key].name = key;
+  });
+
+  Object.keys(eventsWomen).forEach((key) => {
+    eventsWomen[key].name = key;
+  });
+
+  function resolveResult(result, event, ageGroup) {
     let resolvedResult = result.value;
 
-    // TODO: convert dimensions and ages
+    // TODO: convert dimensions
 
     if (result.adjustment) {
       resolvedResult += event.adjustment || 0;
     }
 
+    // Age factor
+    if (ageGroup) {
+      resolvedResult *= ageGroup[event.name];
+      resolvedResult = roundFormula[event.type](resolvedResult);
+    }
+
     return resolvedResult;
   }
 
+  function updateSums(sums, eventName, points) {
+    sums.forEach((sum) => {
+      if (sum[eventName] || sum[eventName] === 0) {
+        sum[eventName] = (points || 0);
+        sum.dom.innerHTML = Object.keys(sum).filter(key => key !== 'dom').map(key => sum[key]).reduce((prev, current) => prev + current);
+      }
+    });
+  }
+
+  function addListeners() {
+    console.info('adding listeners');
+    const containers = document.querySelectorAll('.athletics-container');
+    containers.forEach((container) => {
+      const gender = container.getAttribute('data-athletics-gender').toUpperCase();
+      let sums = Array.from(container.querySelectorAll('.athletics-sum'));
+      sums = sums.map((sum) => {
+        const item = { dom: sum };
+        const sumEvents = JSON.parse(sum.getAttribute('data-athletics-sum-events'));
+        if (sumEvents) {
+          sumEvents.forEach((event) => {
+            item[event] = 0;
+          });
+        }
+        return item;
+      },
+      );
+      container.querySelectorAll('.athletics-event').forEach((eventHTML) => {
+        const input = eventHTML.querySelector('.athletics-event-result');
+        const output = eventHTML.querySelector('.athletics-event-points');
+        input.addEventListener('input', () => {
+          const eventName = eventHTML.getAttribute('data-athletics-event');
+          if (output) {
+            const points = module.exports.calculatePoints({
+              event: module.exports.events[gender][eventName],
+              result: { value: parseFloat(input.value) },
+            });
+            output.innerHTML = (points || 0);
+            updateSums(sums, eventName, points);
+          } else {
+            console.warn(`No points field found for ${eventName}`);
+          }
+        });
+      });
+    });
+  }
+
+  function init() {
+    addListeners();
+  }
+
+  function calculatePoints(options) {
+    const resolvedResult = resolveResult(options.result, options.event, options.ageGroup);
+    if (!resolvedResult) {
+      return undefined;
+    }
+    return Math.floor(pointsFormula[options.event.type](options.event.a,
+     options.event.b, options.event.c, resolvedResult));
+  }
+
   module.exports = {
+    init,
     events: {
       MEN: eventsMen,
       WOMEN: eventsWomen,
     },
-    calculatePoints: options => Math.floor(pointsFormula[options.event.type](options.event.a,
-     options.event.b, options.event.c, resolveResult(options.result, options.event))),
+    ageGroups,
+    calculatePoints,
   };
+  // console.log(process.env.npm_config_testing);
+  if (process.env.TESTING) {
+    module.exports.roundFormula = roundFormula;
+  }
 })();
