@@ -5,7 +5,7 @@ import ageGroups from '../data/age-table.json';
 
   const pointsFormula = {
     RUN: (a, b, c, T) => a * (b - T) ** c, // T in seconds
-    JUMP: (a, b, c, M) => a * (M - b) ** c, // M in centimeters
+    JUMP: (a, b, c, M) => a * (M * 100 - b) ** c, // M in meters
     THROW: (a, b, c, D) => a * (D - b) ** c, // D in meters
   };
 
@@ -56,10 +56,18 @@ import ageGroups from '../data/age-table.json';
     eventsWomen[key].name = key;
   });
 
+  const events = {
+    MEN: eventsMen,
+    WOMEN: eventsWomen,
+  };
+
   function resolveResult(result, event, ageGroup) {
     let resolvedResult = result.value;
 
     // TODO: convert dimensions
+    if (result.dimension === 'cm') {
+      resolvedResult /= 100;
+    }
 
     if (result.adjustment) {
       resolvedResult += event.adjustment || 0;
@@ -72,6 +80,15 @@ import ageGroups from '../data/age-table.json';
     }
 
     return resolvedResult;
+  }
+
+  function calculatePoints(options) {
+    const resolvedResult = resolveResult(options.result, options.event, options.ageGroup);
+    if (!resolvedResult) {
+      return undefined;
+    }
+    return Math.floor(pointsFormula[options.event.type](options.event.a,
+     options.event.b, options.event.c, resolvedResult));
   }
 
   function updateSums(sums, eventName, points) {
@@ -106,8 +123,8 @@ import ageGroups from '../data/age-table.json';
         input.addEventListener('input', () => {
           const eventName = eventHTML.getAttribute('data-athletics-event');
           if (output) {
-            const points = module.exports.calculatePoints({
-              event: module.exports.events[gender][eventName],
+            const points = calculatePoints({
+              event: events[gender][eventName],
               result: { value: parseFloat(input.value) },
             });
             output.innerHTML = (points || 0);
@@ -124,21 +141,9 @@ import ageGroups from '../data/age-table.json';
     addListeners();
   }
 
-  function calculatePoints(options) {
-    const resolvedResult = resolveResult(options.result, options.event, options.ageGroup);
-    if (!resolvedResult) {
-      return undefined;
-    }
-    return Math.floor(pointsFormula[options.event.type](options.event.a,
-     options.event.b, options.event.c, resolvedResult));
-  }
-
   module.exports = {
     init,
-    events: {
-      MEN: eventsMen,
-      WOMEN: eventsWomen,
-    },
+    events,
     ageGroups,
     calculatePoints,
   };
