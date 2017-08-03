@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
-    "test": "dotenv -e .test webpack --env build && node node_modules/mocha/bin/mocha"
+    "test": "webpack --env test && node node_modules/mocha/bin/mocha && webpack --env build"
   },
   "keywords": [
     "Athletics",

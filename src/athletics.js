@@ -142,7 +142,6 @@ import ageGroups from '../data/age-table.json';
     ageGroups,
     calculatePoints,
   };
-  // console.log(process.env.npm_config_testing);
   if (process.env.TESTING) {
     module.exports.roundFormula = roundFormula;
   }

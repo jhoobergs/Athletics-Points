@@ -6,10 +6,14 @@ const DotenvPlugin = require('webpack-dotenv-plugin');
 const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 const libraryName = 'athletics';
 
+let envPath = './.env';
+if (env === 'test') {
+  envPath = './.test';
+}
 const plugins = [
   new DotenvPlugin({
     sample: './.env.example',
-    path: './.env',
+    path: envPath,
   }),
 ];
 let outputFile;
